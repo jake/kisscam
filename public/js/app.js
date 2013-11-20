@@ -9,28 +9,42 @@ $(function(){
         },
 
         init: function(stream){
-            App.socket = new BinaryClient('ws://' + window.location.hostname + ':9000');
-            App.webcam = MediaStream({ video: true });
+            App.socket = new WebSocket('ws://' + window.location.hostname + ':9000');
 
-            // App.prep_canvas();
+            App.open_webcam();
 
-            App.webcam.on('data', function(data){
-                App.socket.send(data);
+            // App.socket.on('stream', function(stream, meta){
+            //     stream.on('data', function(data){
+            //         $('#video').attr('src', data);
+            //     });
+            // });
+
+            // App.socket.on('error', function(err) {
+            //     App.error(err);
+            // });
+        },
+
+        getUserMedia: function(options, success, error){
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+            return navigator.getUserMedia(options, success, error);
+        },
+
+        open_webcam: function(){
+            App.getUserMedia({ video: true }, App.start_webcam_stream, App.error);
+        },
+
+        start_webcam_stream: function(stream){
+            App.webcam = $('<video/>');
+
+            App.webcam.css({
+                width: 1000,
+                height: 1000
+            }).attr({
+                autoplay: true,
+                src: URL.createObjectURL(stream),
             });
 
-            App.webcam.on('error', function(err) {
-                App.error(err);
-            });
-
-            App.socket.on('stream', function(stream, meta){
-                stream.on('data', function(data){
-                    $('#video').attr('src', data);
-                });
-            });
-
-            App.socket.on('error', function(err) {
-                App.error(err);
-            });
+            $('body').append(App.webcam);
         },
 
         prep_canvas: function(){
