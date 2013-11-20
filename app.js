@@ -27,12 +27,18 @@ app.get('/', function(req, res){
 
 var socket = new WebSocketServer({ port: ports.socket });
 socket.broadcast = function(data) {
-    for(var i in this.clients) this.clients[i].send(data);
+    for (var i in this.clients) this.clients[i].send(data);
 };
 
+var active_stream_id = false;
+
 socket.on('connection', function(stream) {
+    stream.id = 'client-' + Date.now();
+
+    if (! active_stream_id) active_stream_id = stream.id;
+
     stream.on('message', function(message) {
-        if (true) { // TODO: only broadcast active stream
+        if (stream.id === active_stream_id) {
             socket.broadcast(message);
         }
     });

@@ -52,6 +52,8 @@ $(function(){
 
             var frame = App.canvas.el.toDataURL('image/png');
 
+            if (App.socket.readyState !== 1) return false;
+
             App.socket.send(frame);
             setTimeout(App.capture_webcam_frame, 200);
         },
