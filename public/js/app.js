@@ -9,19 +9,13 @@ $(function(){
         },
 
         init: function(stream){
-            App.socket = new WebSocket('ws://' + window.location.hostname + ':9000');
-
             App.open_webcam();
 
-            // App.socket.on('stream', function(stream, meta){
-            //     stream.on('data', function(data){
-            //         $('#video').attr('src', data);
-            //     });
-            // });
+            App.socket = new WebSocket('ws://' + window.location.hostname + ':9000');
 
-            // App.socket.on('error', function(err) {
-            //     App.error(err);
-            // });
+            App.socket.onmessage = function(message){
+                $('#display').attr('src', message.data);
+            };
         },
 
         getUserMedia: function(options, success, error){
@@ -34,24 +28,32 @@ $(function(){
         },
 
         start_webcam_stream: function(stream){
-            App.webcam = $('<video/>');
-
-            App.webcam.css({
-                width: 1000,
-                height: 1000
-            }).attr({
+            App.webcam = $('<video/>').attr({
+                width: 250,
+                height: 250,
                 autoplay: true,
-                src: URL.createObjectURL(stream),
+                src: (window.URL || window.webkitURL).createObjectURL(stream),
             });
 
-            $('body').append(App.webcam);
+            App.canvas.el = $('<canvas/>').css({
+                width: App.webcam.width(),
+                height: App.webcam.height(),
+            });
+
+            App.webcam = App.webcam.get(0);
+            App.canvas.el = App.canvas.el.get(0);
+
+            App.canvas.ctx = App.canvas.el.getContext('2d');
+            App.capture_webcam_frame();
         },
 
-        prep_canvas: function(){
-            App.canvas.el = $('#canvas').get(0);
-            App.canvas.ctx = App.canvas.el.getContext('2d');
-            App.canvas.ctx.fillStyle = '#444';
-            App.canvas.ctx.fillText('Loading...', canvas.width / 2-30, canvas.height / 3);
+        capture_webcam_frame: function(){
+            App.canvas.ctx.drawImage(App.webcam, 0, 0, App.canvas.el.width, App.canvas.el.height);
+
+            var frame = App.canvas.el.toDataURL('image/png');
+
+            App.socket.send(frame);
+            setTimeout(App.capture_webcam_frame, 200);
         },
 
         error: function(err){

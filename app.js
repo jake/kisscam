@@ -3,11 +3,11 @@ var ejs = require('ejs');
 var _ = require('underscore');
 
 var app = express();
-var BinaryServer = require('binaryjs').BinaryServer;
+var WebSocketServer = require('ws').Server;
 
 var ports = {
     http: process.env.PORT || 5000,
-    binary: process.env.BINARY_PORT || 9000,
+    socket: process.env.SOCKET_PORT || 9000,
 };
 
 app.configure(function(){
@@ -25,28 +25,24 @@ app.get('/', function(req, res){
     res.render('index');
 });
 
-app.listen(ports.http, function() {
-    var binary = BinaryServer({ port: ports.binary });
+var socket = new WebSocketServer({ port: ports.socket });
+socket.broadcast = function(data) {
+    for(var i in this.clients) this.clients[i].send(data);
+};
 
-    binary.on('connection', function(client){
-        client.on('error', function(e){
-            console.log(e.stack, e.message);
-        });
-
-        client.on('stream', function(stream, meta){
-            for (var id in binary.clients){
-                if (binary.clients.hasOwnProperty(id)){
-                    var other = binary.clients[id];
-                    stream.pipe(other.createStream(meta));
-                }
-            }
-        });
+socket.on('connection', function(stream) {
+    stream.on('message', function(message) {
+        if (true) { // TODO: only broadcast active stream
+            socket.broadcast(message);
+        }
     });
+});
 
+app.listen(ports.http, function() {
     console.log('==================================================')
     console.log('==================================================')
     console.log('Listening for HTTP on port ' + ports.http);
-    console.log('Listening for Binary on port ' + ports.binary);
+    console.log('Listening for WebSocket on port ' + ports.socket);
     console.log('==================================================')
     console.log('==================================================')
 });
