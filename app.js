@@ -1,6 +1,5 @@
 var express = require('express');
 var ejs = require('ejs');
-var _ = require('underscore');
 
 var app = express();
 var WebSocketServer = require('ws').Server;
