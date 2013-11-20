@@ -10,11 +10,20 @@ $(function(){
 
         init: function(stream){
             App.open_webcam();
+            App.start_socket();
+        },
 
+        start_socket: function(){
             App.socket = new WebSocket('ws://' + window.location.hostname + ':9000');
 
             App.socket.onmessage = function(message){
                 $('#display').attr('src', message.data);
+            };
+
+            App.socket.onclose = function(){
+                setTimeout(function(){
+                    App.start_socket();
+                }, 1000);
             };
         },
 
@@ -24,10 +33,10 @@ $(function(){
         },
 
         open_webcam: function(){
-            App.getUserMedia({ video: true }, App.start_webcam_stream, App.error);
+            App.getUserMedia({ video: true }, App.start_webcam, App.error);
         },
 
-        start_webcam_stream: function(stream){
+        start_webcam: function(stream){
             App.webcam = $('<video/>').attr({
                 width: 250,
                 height: 250,
@@ -51,8 +60,6 @@ $(function(){
             App.canvas.ctx.drawImage(App.webcam, 0, 0, App.canvas.el.width, App.canvas.el.height);
 
             var frame = App.canvas.el.toDataURL('image/png');
-
-            if (App.socket.readyState !== 1) return false;
 
             App.socket.send(frame);
             setTimeout(App.capture_webcam_frame, 200);
