@@ -21,6 +21,7 @@ $(function(){
             };
 
             App.socket.onclose = function(){
+                return;
                 setTimeout(function(){
                     App.start_socket();
                 }, 1000);
