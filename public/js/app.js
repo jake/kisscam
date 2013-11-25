@@ -10,17 +10,20 @@ $(function(){
 
         init: function(stream){
             App.open_webcam();
-            App.start_socket();
         },
 
-        start_socket: function(){
+        start_socket: function(onopen_callback){
             App.socket = new WebSocket(window.location.origin.replace(/^http/, 'ws'));
+
+            App.socket.onopen = onopen_callback;
 
             App.socket.onmessage = function(message){
                 $('#display').attr('src', message.data);
             };
 
             App.socket.onclose = function(){
+                if (App.socket === false) return;
+
                 setTimeout(function(){
                     App.start_socket();
                 }, 1000);
@@ -53,7 +56,10 @@ $(function(){
             App.canvas.el = App.canvas.el.get(0);
 
             App.canvas.ctx = App.canvas.el.getContext('2d');
-            App.capture_webcam_frame();
+
+            App.start_socket(function(){
+                App.capture_webcam_frame();
+            });
         },
 
         capture_webcam_frame: function(){

@@ -26,6 +26,7 @@ socket.broadcast = function(data) {
 
 var streams = {
     list: [],
+
     active: false,
 
     is_active: function(id){
@@ -40,11 +41,13 @@ var streams = {
 
     close: function(id){
         this.list = _.without(this.list, id);
+
         if (this.active == id) this.activate_random();
     },
 
     activate_random: function(){
         var active = _.sample(_.without(this.list, this.active));
+
         if (active) {
             this.active = active;
             console.log('switching to %j', this.active);
