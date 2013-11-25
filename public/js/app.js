@@ -9,6 +9,11 @@ $(function(){
         },
 
         init: function(stream){
+            if (window.location.hostname != 'localhost' && window.location.protocol === 'http:') {
+                window.location = window.location.href.replace('http:', 'https:');
+                return;
+            }
+
             App.open_webcam();
         },
 
