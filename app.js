@@ -2,6 +2,7 @@ var WebSocketServer = require('ws').Server;
 var http = require('http');
 var express = require('express');
 var _ = require('underscore');
+var stathat = require('stathat');
 var app = express();
 
 var port = process.env.PORT || 5000;
@@ -44,12 +45,16 @@ var streams = {
         this.list.push(id);
 
         if (! this.active) this.activate_random();
+
+        stathat.trackEZCount('jacob.bijani@gmail.com', 'streams.connect', 1, function(status, json){ console.log( status, json ); });
     },
 
     close: function(id){
         this.list = _.without(this.list, id);
 
         if (this.active == id) this.activate_random();
+
+        stathat.trackEZCount('jacob.bijani@gmail.com', 'streams.close', 1, function(status, json){ console.log( status, json ); });
     },
 
     activate_random: function(){
