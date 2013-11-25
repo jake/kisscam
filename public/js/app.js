@@ -36,7 +36,11 @@ $(function(){
         },
 
         open_webcam: function(){
-            App.getUserMedia({ video: true }, App.start_webcam, App.error);
+            App.getUserMedia({ video: true }, App.start_webcam, App.webcam_error);
+        },
+
+        webcam_error: function(){
+            $('#webcam_error').show();
         },
 
         start_webcam: function(stream){
