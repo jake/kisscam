@@ -96,7 +96,7 @@ $(function(){
                 frame: frame
             }));
 
-            setTimeout(App.capture_webcam_frame, 300);
+            setTimeout(App.capture_webcam_frame, 350);
         },
 
         error: function(err){
