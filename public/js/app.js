@@ -62,7 +62,7 @@ $(function(){
             var frame = App.canvas.el.toDataURL('image/png');
 
             App.socket.send(frame);
-            setTimeout(App.capture_webcam_frame, 200);
+            setTimeout(App.capture_webcam_frame, 300);
         },
 
         error: function(err){
