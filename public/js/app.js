@@ -18,6 +18,7 @@ $(function(){
             App.socket.onopen = onopen_callback;
 
             App.socket.onmessage = function(message){
+                $('#loading').hide();
                 $('#display').attr('src', message.data);
             };
 
@@ -39,11 +40,17 @@ $(function(){
             App.getUserMedia({ video: true }, App.start_webcam, App.webcam_error);
         },
 
-        webcam_error: function(){
+        webcam_error: function(err){
+            $('#lobby, #loading').hide();
             $('#webcam_error').show();
+
+            console.log('webcam_error: ' + err);
         },
 
         start_webcam: function(stream){
+            $('#loading').show();
+            $('#lobby, #webcam_error').hide();
+
             App.webcam = $('<video/>').attr({
                 width: 250,
                 height: 250,
