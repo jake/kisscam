@@ -37,7 +37,7 @@ socket.on('connection', function(stream) {
     if (! active_stream_id) active_stream_id = stream.id;
 
     stream.on('message', function(message) {
-        if (1 || stream.id === active_stream_id) {
+        if (stream.id === active_stream_id) {
             socket.broadcast(message);
         }
     });
