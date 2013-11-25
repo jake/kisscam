@@ -46,7 +46,7 @@ var streams = {
 
         if (! this.active) this.activate_random();
 
-        stathat.trackEZCount('jacob.bijani@gmail.com', 'streams.connect', 1, function(status, json){ console.log( status, json ); });
+        stathat.trackEZCount('jacob.bijani@gmail.com', 'streams.connect', 1, function(status, json){});
     },
 
     close: function(id){
@@ -54,7 +54,7 @@ var streams = {
 
         if (this.active == id) this.activate_random();
 
-        stathat.trackEZCount('jacob.bijani@gmail.com', 'streams.close', 1, function(status, json){ console.log( status, json ); });
+        stathat.trackEZCount('jacob.bijani@gmail.com', 'streams.close', 1, function(status, json){});
     },
 
     activate_random: function(){
