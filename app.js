@@ -20,8 +20,15 @@ var socket = new WebSocketServer({ server: server });
 console.log('WebSocket server created');
 console.log('==================================================');
 
-socket.broadcast = function(data) {
+socket.broadcast = function(data){
     for (var i in this.clients) this.clients[i].send(data);
+};
+
+socket.broadcast_client_count = function(){
+    this.broadcast(JSON.stringify({
+        type: 'client_count',
+        client_count: this.clients.length
+    }));
 };
 
 var streams = {
@@ -66,8 +73,10 @@ socket.on('connection', function(stream) {
 
     streams.connect(stream.id);
 
+    socket.broadcast_client_count();
+
     stream.on('message', function(message) {
-        // Broadcast if this is the currently active stream
+        // Broadcast frame if its from the active stream
         if (streams.is_active(stream.id)) {
             socket.broadcast(message);
         }
@@ -75,7 +84,7 @@ socket.on('connection', function(stream) {
 
     stream.on('close', function() {
         console.log('WebSocket connection closed');
-
         streams.close(stream.id);
+        socket.broadcast_client_count();
     });
 });

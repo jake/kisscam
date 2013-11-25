@@ -40,7 +40,7 @@ body {
         padding: 50px;
     }
 
-#counter {
+#client_count {
     position: fixed;
     left: 0;
     right: 0;

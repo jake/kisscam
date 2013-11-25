@@ -18,8 +18,16 @@ $(function(){
             App.socket.onopen = onopen_callback;
 
             App.socket.onmessage = function(message){
-                $('#loading').hide();
-                $('#display').attr('src', message.data);
+                var data = JSON.parse(message.data);
+
+                if (data.type == 'frame') {
+                    $('#loading').hide();
+                    $('#display').attr('src', data.frame);
+                } else if (data.type == 'client_count') {
+                    $('#client_count').text(data.client_count + ' ONLINE');
+                } else {
+                    console.log('unknown message type: ' + JSON.stringify(data));
+                }
             };
 
             App.socket.onclose = function(){
@@ -78,7 +86,11 @@ $(function(){
 
             var frame = App.canvas.el.toDataURL('image/png');
 
-            App.socket.send(frame);
+            App.socket.send(JSON.stringify({
+                type: 'frame',
+                frame: frame
+            }));
+
             setTimeout(App.capture_webcam_frame, 300);
         },
 
