@@ -14,13 +14,7 @@ $(function(){
         },
 
         start_socket: function(){
-            var host = window.location.origin.replace(/^http/, 'ws');
-
-            if (window.location.hostname === 'localhost') {
-                host = 'ws://' + window.location.hostname + ':9000';
-            }
-
-            App.socket = new WebSocket(host);
+            App.socket = new WebSocket(window.location.origin.replace(/^http/, 'ws'));
 
             App.socket.onmessage = function(message){
                 $('#display').attr('src', message.data);
